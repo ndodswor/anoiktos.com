@@ -1,0 +1,174 @@
+/*Body*/
+body {
+    background-color: #000;
+    background-image:url(http://testing.x10.mx/images/tesselate2.jpg);
+    color: #FFF;
+}
+body a {color: #47B224;}
+body a:visited {color: #1975FF;}
+body a:active {color: #1975FF;}
+body a:hover {color: #007A29;}
+
+section#introduction {
+    text-align: center;
+}
+section {
+    margin: auto;
+    max-width: 600px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 2px inset grey;
+    border-radius: 5px;
+    padding: 5px !important;
+    background-color: #222;
+}
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+
+ul#userAgentList p {text-align: center;}
+ul#userAgentList {list-style-type:none;}
+ul#userAgentList li {width: 10%; display:inline-block; min-width: 140px;}
+
+ul#siteList p {text-align: center;}
+ul#siteList {list-style-type:none;}
+ul#siteList li {width: 10%; display:inline-block; min-width: 140px; overflow:hidden; margin-left: 10px;}
+
+/*Navigation*/
+nav {margin: auto; width: 100%; text-align: center;}
+nav>ul {display:block; list-style-type: none; position: relative; }
+nav>ul>li {display:inline-block; margin: auto; width: 90px; background-color: white; max-width: 20%; }
+nav>ul>li:hover {background-color: black;}
+nav>ul>li>ul { list-style-type:none; position: absolute; display:none; }
+nav>ul>li:hover>ul {display:block; ;}
+nav>ul>li>ul>li {color: white;}
+nav>ul>li>ul>li>a {text-align: center;}
+nav>ul>li {text-align: center;  }
+nav>ul>li>ul {background-color: white; margin-top: 0px; padding: 3px; border-radius: 5px; border: 2px inset grey; margin-top: 2px; overflow: visible; }
+nav>ul>li>ul>li>a {color: black; text-decoration: none; }
+nav>ul>li>ul>li>a:visited {color: black; text-decoration: none; }
+nav>ul>li>ul>li:hover>a {background-color: black; color: white; }
+nav>ul>li>ul>li {text-align: left;}
+nav>ul>li>a{text-decoration: none; color: black;}
+nav>ul>li>a:visited{text-decoration: none; color: black;}
+nav>ul>li:hover>a {text-decoration: none; color: white;}
+nav>ul>li {
+display: inline-block;
+margin: auto;
+width: 90px;
+margin: 2px;
+border: 2px outset grey;
+background-color: white;
+border-radius: 5px;
+}
+
+/*Header*/
+header {
+    text-align: center;
+    margin: auto;
+}
+
+header h1#siteTitle{
+    background-color: #222;
+   margin: auto;
+    max-width: 220px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 2px inset grey;
+    border-radius: 5px;
+    padding: 5px !important;
+}
+
+header h1#siteTitle a {
+    font-size: em;
+    font-weight: 700;
+    text-decoration: none;
+    color: #FFF;
+}
+header p#siteSubTitle {
+    font-size: 18px;
+}
+
+
+/*Form*/
+input#headbang {
+    width: 80%;
+    height: 80%;
+    background-color: #FFF;
+    color: #000;
+    font-size: 100%;
+    font-weight: 700;
+    padding: 10%;
+    margin: 10%;
+}
+
+input#headbang:hover {
+    background-color: #222;
+    color: #FFF;
+}
+
+select, input {background-color: #222; border-color: #FFF; border-width: 1px; color: #FFF; border-radius: 0px;}
+
+/*Result*/
+
+iframe#previewFrame {
+    width: 300px !important;
+    height: 480px !important;
+    margin: auto !important;
+    display:block !important;
+}
+section#previewSection{text-align: center;}
+section#previewSection a#previewLink {background-color: white; padding: 3px; border-radius: 5px; border: 2px inset grey; overflow: visible; color:black; margin: 10px; text-decoration:none;}
+section#previewSection a#previewLink:hover {background-color: black; color:white;}
+
+/*Footer*/
+
+footer {
+    margin: auto;
+    font-size: 12px;
+    max-width: 500px;
+    text-align: center;
+}
+
+/*Generic*/
+p,ul {
+    display: block;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+}
+section h {
+font-weight: bold;
+color: lightgreen;
+}
+
+ul, menu, dir {
+-webkit-padding-start: 0px;
+}
+
+/*ehTest*/
+img.successImg {border-radius: 3px; border-color: #fff; margin: 2px; border-width: 1px; border-style: outset}
+ 
+/*CSS Test*/
+div.testBox {background-size: contain; background-image:url('http://img105.imageshack.us/img105/937/rippletest2ak3.gif'); background-color: blue; width: 10%; height: 10%; margin: 0px; padding: 0px; float: left; transition: .2s;transform-origin: 50% 50%; -webkit-transform-origin: 50% 50%; border: 0px solid black;}
+div.testBox:hover { background-color: red;transform: rotateX(10deg) rotateY(10deg) rotate(90deg); -webkit-transform: rotateX(10deg) rotateY(10deg) rotate(90deg);}
+div.testBox:active{transform:rotate(369deg) rotateX(90deg) rotateY(0deg); -webkit-transform:rotate(180deg) rotateX(90deg) rotateY(0deg); }
+section#wavesSection {width: 600px; height: 600px; background-color: green !important;}
+section#testSection {width: 730px; height: auto; max-width: 10000px; max-height: 1000000px; background-color: black !important;}
+
+/*Templates*/
+img.templateThumbnail{width: 100% !important; height: auto; margin-top: 5px; border-radius: 3px;}
+section.templateSection p.templateName{margin: 0 auto; text-align: center; font-size: 20px; background-color: white; color: black; border-radius: 3px; width: 100%;}
+section.templateSection input{width: 100%; margin: 0 auto; display:block;}
+section.templateSection input:hover{color: black; background-color: white;}
+p.onePreview a{color: white;}
+p.onePreview a:hover{color:green;}
+
+/*LMDTFY*/
+.dudaSearchField{width: 65%; }
+.dudaSearchButton{width:30%;}
+section.form form{width: 300px; margin: 0 auto;}
+p.whiteTitle {background-color: white; color: black; border-radius: 3px; text-align: center;}
