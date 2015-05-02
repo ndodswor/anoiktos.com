@@ -1,0 +1,27 @@
+span.ticketNumber{background-color: #FFFFFF; color: #000000; padding: 0px 3px; border-width: 1px; border-style: outset; border-radius: 2px; border-radius: 3px; border-color:black; margin-right: 3px; display:inline-block;}
+ul#tickets{list-style: none;}
+li.ticket{clear:both; border-radius: 5px; background-color: #444444; padding: 5px; margin: 5px;}
+li.ticket:after{content: " "; display:block; height: 0; clear: both; }
+span.numTickets{float: left; margin-bottom: 5px;}
+a.extractLink{float: right;}
+p#linkSection {clear: both; margin: 5px; border-radius: 5px; background-color: #444444;
+padding: 5px; word-wrap:break-word;}
+p#linkSection:after{content: " "; display:block; height: 0; clear:both; }
+p#linkSection span{ padding-left: 5px; padding-right: 5px; background-color: white; border-radius: 5px; border-width: 2px; border-style: outset; border-color: gray;}
+p#linkSection span:hover { background-color: black;}
+p#linkSection span a{text-decoration:none; color: black;}
+p#linkSection span:hover a{ background-color: black;color:white;}
+p#linkSection span.nextLink{float: right;}
+p#linkSection span.prevLink{float: left;}
+ul.ticketInfo{float: right; list-style:none; font-size: 10px; font-family: arial; background-color: #000000; border-radius: 5px; width: 150px; padding: 5px;}
+p.comment{font-size: 100%;}
+a.ticketLink{font-size:107%; max-width: 100%; overflow:hidden; text-decoration:none; word-wrap:break-word; font-family: arial;}
+div.ticketNameNumberDiv{background-color:rgba(0,0,0,0); border-top-left-radius: 5px; border-top-right-radius: 5px; border-top-right-radius: 5px;}
+@media all and (max-width: 600px){
+  p.comment{
+    font-size: 75%;
+  }
+  a.ticketLink, span.numTickets, a.extractLink{font-size:80%;}
+  ul.ticketInfo{font-size: 8px;}
+}
+.saleslead{background-color: green !important;}
