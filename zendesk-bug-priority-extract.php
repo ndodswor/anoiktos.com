@@ -1,6 +1,8 @@
 <?php
 //ini_set('display_errors', 'On');
 //error_reporting(E_ALL);
+
+//includes
 include "functions.php";
 
 //set type of generated file
@@ -10,24 +12,15 @@ header('Content-Disposition: attachment; filename="bug-priority-extract.txt"');
 ?>
 <?php
 
-//set default request
-if(empty($_GET))
+//get API request if user inputted one
+if(md5($_GET['sec']) == "#####example#####")
 {
-$_GET['query'] = "type:ticket%20status:open%20group:qa";
+	$_GET['query'] = "type:ticket%20status:open%20group:qa";
 	$apiRequest = "/api/v2/search.json?sort_order=desc&sort_by=updated_at&query={$_GET['query']}";
-}
-else
-{
-	//get API request if user inputted one
-	$apiRequest = "/api/v2/search.json?sort_order=desc&sort_by=updated_at";
-	$apiRequest = $apiRequest . "&page=" . getIfGet('page') . "&query=" . rawurlencode(getIfGet('query'));
-	if($_GET['from_date'])
+	$apiRequest = $apiRequest . "&page=" . getIfGet('page') . "&query=" . getIfGet('query');
+	if($_GET['number'])
 	{
-		$apiRequest = $apiRequest . "+solved>" . $_GET['from_date'];
-	}
-	if($_GET['to_date'])
-	{
-		$apiRequest = $apiRequest . "+solved<" . $_GET['to_date'];
+		$apiRequest = $apiRequest . "+" . $_GET['number'];
 	}
 }
 
@@ -46,52 +39,33 @@ if(strpos($result, "error_code") !== false)
 }
 else
 {
+	//decode the result
+	$result = json_decode($result);
+
+	//process the result
+	generateFileData($result);
+}
+
+//prints the data gathered from the call
+function generateFileData($result)
+{
+	//include variables
+	include "bug-config.php";
+	include "bug-functions.php";
+
 	//print column titles
 	print "\"" . "Ticket ID" . "\",";
 	print "\"" . "Subject" . "\",";
 	print "\"" . "Creation Date" . "\",";
 	print "\"" . "Old Issue" . "\",";
 	//start of array variables
-	print "\"" . "No Customer Workaround" . "\",";
-	print "\"" . "No Workaround" . "\",";
-	print "\"" . "Business Impact" . "\",";
-	print "\"" . "Vocal" . "\",";
-	print "\"" . "Common" . "\",";
+	foreach($priorityFields as $field => $value)
+	{
+		print "\"" . $value['name'] . "\",";
+	}
 	//end of array variables
-	print "\"" . "Productive" . "\",";
 	print "\"" . "Priority" . "\",";
 	print "\"" . "Priority #" . "\"\r\n";
-
-	//decode the result
-	$result = json_decode($result);
-
-	//process the result
-	extractApiData($result);
-}
-
-//prints the data gathered from the call
-function extractApiData($result)
-{
-	//set variables
-
-	//used to determine whether a ticket is old
-	$oldAge = 60;
-
-	//used to label priority fields
-	//if you add a new one, be sure to also add it to the column titles above
-	$priorityFields = array(
-		"25676897" => array("name" => "No Customer Workaround", "weight" => 1),
-		"24126186" => array("name" => "No Workaround", "weight" => 1),
-		"25676907" => array("name" => "Business Impact", "weight" => 1),
-		"25676917" => array("name" => "Vocal", "weight" => 1),
-		"25676927" => array("name" => "Common", "weight" => 1),
-	);
-
-	//set weight for non-array priority fields
-	$oldAgeWeight = 1;
-	$productiveWeight = 1;
-
-	//start function
 
 	//handle queries with multiple pages of results
 	$pages = floor(($result->count / 100)) + 1;
@@ -122,14 +96,13 @@ function extractApiData($result)
 
 			//get days since created
 			$createdAt = strtotime($r->created_at);
-			$age = time() - $createdAt; 
-			$age = floor($age/(60*60*24));
+			$eras = calcEras($createdAt, $era);
 
 			//check to see if it's an old ticket
-			if($age > $oldAge)
+			if($eras > 0)
 			{
-				print "\"true\",";
-				$thisPriority += $oldAgeWeight; 
+				print "\"$eras\",";
+				$thisPriority += ($eraWeight * $eras); 
 			}
 			else
 			{
@@ -147,7 +120,7 @@ function extractApiData($result)
 						if($cf->value === true)
 						{
 							print "\"true\",";
-							$thisPriority += $value[weight]; 
+							$thisPriority += $value['weight']; 
 						}
 						else
 						{
@@ -155,32 +128,33 @@ function extractApiData($result)
 						}
 					}
 				}	
-				//deal with reseller status
+				//deal with user status
 				if($cf->id === 24201548)
 				{
-					if($cf->value === "autodetect_1_partner"||
-						$cf->value === "autodetect_2_partner"||
-						$cf->value === "autodetect_3_partner")
+					//t4
+					if($cf->value === "autodetect_4_partner")
 					{
-						print "\"true\",";
-						$thisPriority += $productiveWeight; 	
+						$thisPriority += $tierWeight['4']; 	
 					}
-					else
+					//t3
+					if($cf->value === "autodetect_3_partner")
 					{
-						print "\"\",";
+						$thisPriority += $tierWeight['3']; 	
 					}
-				}	
+					//t2
+					if($cf->value === "autodetect_2_partner")
+					{
+						$thisPriority += $tierWeight['2']; 	
+					}
+					//t1
+					if($cf->value === "autodetect_1_partner")
+					{
+						$thisPriority += $tierWeight['1']; 	
+					}
+				}
 			}
-			//translate priority to value
-			$priorityValue = "medium";
-			if($thisPriority < 3)
-			{
-				$priorityValue = "low";
-			}
-			if($thisPriority > 4)
-			{
-				$priorityValue = "high";
-			}
+		//translate priority to value
+		$priorityValue = calcPriority($thisPriority);
 		//print priority
 		print "\"$thisPriority\",\"$priorityValue\"\r\n";
 		}

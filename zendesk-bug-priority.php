@@ -1,17 +1,17 @@
 <?php
-//Zendesk Bug Priority
-//Gets a list of bugs from zendesk and generates a visual interface
-//for information about them.
-
+//ini_set('display_errors', 'On');
+//error_reporting(E_ALL);
 $pageTitle    = "Zendesk Bug Priority";
 $pageCSS      = "css/zendeskBugPriority.css";
 $pageSubTitle = "(Zendesk Bug Priority)";
 //$debug = true;
-$oldAge = 60;
 
+//includes
+include "bug-config.php";
 include "header.php";
 include "main-nav.php";
 include "functions.php";
+include "bug-functions.php";
 ?>
 
 <!-- introduction -->
@@ -26,41 +26,27 @@ include "functions.php";
   </form>
 </section>
 
-
 <?php
-
-//set variables
-
-//used to label priority fields
-$priorityFields = array(
-	"25676897" => array("name" => "No Customer Workaround", "weight" => 1),
-	"24126186" => array("name" => "No Workaround", "weight" => 1),
-	"25676907" => array("name" => "Business Impact", "weight" => 1),
-	"25676917" => array("name" => "Vocal", "weight" => 1),
-	"25676927" => array("name" => "Common", "weight" => 1),
-);
-
-//set weight for non-array priority fields
-$oldAgeWeight = 1;
-$productiveWeight = 1;
 
 //start results list
 
 //set default request
 if(empty($_GET))
 {
-	$_GET['query'] = "type:ticket%20status:open%20group:qa";
-	$apiRequest = "/api/v2/search.json?sort_order=desc&sort_by=updated_at&query={$_GET['query']}";
+	print "<section>security token not found</section>";
 }
 else
 {
-	//get API request if user inputted one
-	$_GET['query'] = "type:ticket%20status:open%20group:qa";
-	$apiRequest = "/api/v2/search.json?sort_order=desc&sort_by=updated_at&query={$_GET['query']}";
-	$apiRequest = $apiRequest . "&page=" . getIfGet('page') . "&query=" . getIfGet('query');
-	if($_GET['number'])
+	if(md5($_GET['sec']) == "#####example#####")
 	{
-		$apiRequest = $apiRequest . "+" . $_GET['number'];
+		//get API request if user inputted one
+		$_GET['query'] = "type:ticket%20status:open%20group:qa";
+		$apiRequest = "/api/v2/search.json?sort_order=desc&sort_by=updated_at&query={$_GET['query']}";
+		$apiRequest = $apiRequest . "&page=" . getIfGet('page') . "&query=" . getIfGet('query');
+		if($_GET['number'])
+		{
+			$apiRequest = $apiRequest . "+" . $_GET['number'];
+		}
 	}
 }
 
@@ -160,14 +146,15 @@ foreach($result->results as $r)
 
 	//get days since created
 	$createdAt = strtotime($r->created_at);
-	$age = time() - $createdAt; 
-	$age = floor($age/(60*60*24));
+	$eras = calcEras($createdAt, $era);
 
-	if($age > $oldAge)
+	//adjust priority based on age
+	if($eras > 0)
 	{
-		print "<li class='priorityItem'>Old Issue</li>";
-		$thisPriority += $oldAgeWeight; 
+		print "<li class='priorityItem'>$eras eras old</li>";
+		$thisPriority += ($eraWeight * $eras); 
 	}
+	
 	foreach($r->custom_fields as $cf)
 	{
 		//calculate priority fields
@@ -177,35 +164,45 @@ foreach($result->results as $r)
 			{
 				if($cf->value === true)
 				{
-					print "<li class='priorityItem'>{$value[name]}</li>";
-					$thisPriority += $value[weight]; 
+					print "<li class='priorityItem'>{$value['name']}</li>";
+					$thisPriority += $value['weight']; 
 				}
 			}
 		}	
-		//deal with reseller status
+		//deal with user status
 		if($cf->id === 24201548)
 		{
-			if($cf->value === "autodetect_1_partner"||
-				$cf->value === "autodetect_2_partner"||
-				$cf->value === "autodetect_3_partner")
+			//t4
+			if($cf->value === "autodetect_4_partner")
 			{
-				print "<li class='Productive'>Productive</li>";
-					$thisPriority += $productiveWeight; 	
+				print "<li class='User'>T4 Partner</li>";
+					$thisPriority += $tierWeight["4"]; 	
+			}
+			//t3
+			if($cf->value === "autodetect_3_partner")
+			{
+				print "<li class='User'>T3 Partner</li>";
+					$thisPriority += $tierWeight["3"]; 	
+			}
+			//t2
+			if($cf->value === "autodetect_2_partner")
+			{
+				print "<li class='User'>T2 Partner</li>";
+					$thisPriority += $tierWeight["2"]; 	
+			}
+			//t1
+			if($cf->value === "autodetect_1_partner")
+			{
+				print "<li class='User'>T1 Partner</li>";
+					$thisPriority += $tierWeight["1"]; 	
 			}
 		}
-		
 	}
 	print "</ul>";
+
 	//translate priority to value
-		$priorityValue = "medium";
-		if($thisPriority < 3)
-		{
-			$priorityValue = "low";
-		}
-		if($thisPriority > 4)
-		{
-			$priorityValue = "high";
-		}
+	$priorityValue = calcPriority($thisPriority);
+		
 	//print priority
 	print "<div class='ticketPriority $priorityValue'>Priority:$thisPriority ($priorityValue)</div>";
 	print "</li>";
